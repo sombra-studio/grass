@@ -52,7 +52,7 @@ class Window(mglw.WindowConfig):
     def render(self, time, frametime):
         # This method is called every frame
         self.ctx.enable_only(
-            moderngl.DEPTH_TEST | moderngl.CULL_FACE | moderngl.BLEND
+            moderngl.BLEND
         )
 
         # Move camera in on the z axis slightly by default
