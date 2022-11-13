@@ -5,6 +5,9 @@ from pathlib import Path
 from pyrr import Matrix44
 
 
+from terrain import Terrain
+
+
 fov = 45.0
 far = 1000.0
 near = 0.1
@@ -20,13 +23,14 @@ class Window(mglw.WindowConfig):
         self.wnd.mouse_exclusivity = True
         self.camera_enabled = True
         # Do initialization here
-        self.grass_obj = self.load_scene("data/grass.glb")
+        # self.grass_obj = self.load_scene("data/grass.glb")
         self.camera = KeyboardCamera(
             self.wnd.keys,
             fov=fov, aspect_ratio=self.wnd.aspect_ratio, near=near, far=far
         )
-        if self.grass_obj.diagonal_size > 0:
-            self.camera.velocity = self.grass_obj.diagonal_size / 5.0
+        self.terrain = Terrain(self)
+        # if self.grass_obj.diagonal_size > 0:
+        #     self.camera.velocity = self.grass_obj.diagonal_size / 5.0
 
     def key_event(self, key, action, modifiers):
         keys = self.wnd.keys
@@ -54,16 +58,22 @@ class Window(mglw.WindowConfig):
         self.ctx.enable_only(
             moderngl.BLEND
         )
-
+        self.ctx.clear()
         # Move camera in on the z axis slightly by default
-        translation = Matrix44.from_translation((0, 0, -1.5), dtype='f4')
-        camera_matrix = self.camera.matrix * translation
+        # translation = Matrix44.from_translation((0, 0, -1.5), dtype='f4')
+        # camera_matrix = self.camera.matrix * translation
 
-        self.grass_obj.draw(
+        self.terrain.draw(
             projection_matrix=self.camera.projection.matrix,
-            camera_matrix=camera_matrix,
+            # camera_matrix=camera_matrix,
+            camera_matrix=self.camera.matrix,
             time=time
         )
+        # self.grass_obj.draw(
+        #     projection_matrix=self.camera.projection.matrix,
+        #     camera_matrix=camera_matrix,
+        #     time=time
+        # )
 
 
 if __name__ == '__main__':
