@@ -1,6 +1,7 @@
 import moderngl
 import moderngl_window as mglw
 from moderngl_window.scene import KeyboardCamera
+from moderngl_window import screenshot
 from pathlib import Path
 
 
@@ -49,6 +50,8 @@ class Window(mglw.WindowConfig):
                 self.wnd.cursor = not self.camera_enabled
             if key == keys.SPACE:
                 self.timer.toggle_pause()
+            if key == keys.S:
+                screenshot.create(self.wnd.fbo, name='screenshot.png')
 
     def mouse_position_event(self, x: int, y: int, dx, dy):
         if self.camera_enabled:
@@ -60,9 +63,7 @@ class Window(mglw.WindowConfig):
     def render(self, time, _):
         # This method is called every frame
         self.ctx.clear()
-        self.ctx.enable_only(
-            moderngl.BLEND
-        )
+        self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.BLEND)
         self.terrain.draw(
             projection_matrix=self.camera.projection.matrix,
             camera_matrix=self.camera.matrix
