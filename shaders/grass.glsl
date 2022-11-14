@@ -7,13 +7,14 @@ uniform mat4 m_cam;
 uniform float scale;
 in vec3 in_position;
 in vec2 in_uv;
+in vec3 in_offset;
 
 out vec2 uv;
 
 void main()
 {
     uv = in_uv;
-    vec3 pos = in_position * scale + vec3(0, 0, -5);    // add offset
+    vec3 pos = in_position * scale + in_offset;    // add offset
     gl_Position = m_proj * m_cam * vec4(pos, 1.0);
 }
 

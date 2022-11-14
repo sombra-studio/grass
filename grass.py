@@ -2,14 +2,20 @@ from array import array
 from math import cos, sin, radians
 import moderngl
 import moderngl_window
+import numpy as np
+
+COLS = 300
+ROWS = 300
 
 
 class Grass:
     def __init__(self, window: moderngl_window.WindowConfig):
         self.diffuse = window.load_texture_2d('data/grass3.png')
+        self.diffuse.build_mipmaps()
         sin_theta = sin(radians(45))
         cos_theta = cos(radians(45))
-        self.vbo = window.ctx.buffer(
+        ctx = window.ctx
+        self.vbo = ctx.buffer(
             array(
                 'f',
                 [
@@ -39,12 +45,19 @@ class Grass:
                 ]
             )
         )
+        # Create offsets for instances
+        offset_x = np.tile(np.arange(COLS), ROWS) - 150
+        offset_y = np.zeros(ROWS * COLS)
+        offset_z = np.repeat(-np.arange(ROWS), COLS)
+        offsets = np.dstack([offset_x, offset_y, offset_z])
+        self.vbo_offsets = ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
         self.program['scale'].value = 0.5
-        self.vao = window.ctx.vertex_array(
+        self.vao = ctx.vertex_array(
             self.program,
             [
                 (self.vbo, '3f 2f', 'in_position', 'in_uv'),
+                (self.vbo_offsets, '3f /i', 'in_offset')
             ]
         )
         self.window = window
@@ -53,4 +66,4 @@ class Grass:
         self.program["m_proj"].write(projection_matrix)
         self.program["m_cam"].write(camera_matrix)
         self.diffuse.use(0)
-        self.vao.render(moderngl.TRIANGLE_STRIP)
+        self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS)
