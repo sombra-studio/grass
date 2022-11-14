@@ -22,10 +22,10 @@ class Terrain:
                 [
                     # Triangle strip creating a plane
                     # x, y, z, u, v
-                    -150, -2, -300, 0, 0,      # lower left
-                    -150, -2, 0, 0, 1,    # upper left
-                    150, -2, -300, 1, 0,      # lower right
-                    150, -2, 0, 1, 1     # upper right
+                    -150, 0, -300, 0, 0,      # lower left
+                    -150, 0, 0, 0, 1,    # upper left
+                    150, 0, -300, 1, 0,      # lower right
+                    150, 0, 0, 1, 1     # upper right
                 ]
             )
         )
@@ -42,7 +42,7 @@ class Terrain:
         self.program['normals'].value = NORMAL_MAP_UNIT
         self.program['uv_scale'].value = 3
 
-    def draw(self, projection_matrix=None, camera_matrix=None, time=0.0):
+    def draw(self, projection_matrix=None, camera_matrix=None):
         self.program["m_proj"].write(projection_matrix)
         self.program["m_cam"].write(camera_matrix)
         self.diffuse_map.use(location=DIFFUSE_MAP_UNIT)

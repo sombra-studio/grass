@@ -1,10 +1,10 @@
-from math import cos, radians, sin
 import moderngl
 import moderngl_window as mglw
 from moderngl_window.scene import KeyboardCamera
 from pathlib import Path
 
 
+from grass import Grass
 from terrain import Terrain
 
 
@@ -22,16 +22,15 @@ class Window(mglw.WindowConfig):
         super().__init__(**kwargs)
         self.wnd.mouse_exclusivity = True
         self.camera_enabled = True
-        # Do initialization here
-        # self.grass_obj = self.load_scene("data/grass.glb")
         self.camera = KeyboardCamera(
             self.wnd.keys,
             fov=FOV, aspect_ratio=self.wnd.aspect_ratio, near=NEAR, far=FAR
         )
-        self._light_pos = (0, 200, -150)
+        self.camera.set_position(0.0, 2.0, 0.0)
+        self.camera.velocity = 25.0
+        self._light_pos = (0.0, 200.0, -150.0)
         self.terrain = Terrain(self)
-        # if self.grass_obj.diagonal_size > 0:
-        #     self.camera.velocity = self.grass_obj.diagonal_size / 5.0
+        self.grass = Grass(self)
 
     @property
     def light_pos(self) -> tuple[float, float, float]:
@@ -58,23 +57,20 @@ class Window(mglw.WindowConfig):
     def resize(self, width: int, height: int):
         self.camera.projection.update(aspect_ratio=self.wnd.aspect_ratio)
 
-    def render(self, time, frametime):
+    def render(self, time, _):
         # This method is called every frame
+        self.ctx.clear()
         self.ctx.enable_only(
             moderngl.BLEND
         )
-        self.ctx.clear()
-
         self.terrain.draw(
             projection_matrix=self.camera.projection.matrix,
-            camera_matrix=self.camera.matrix,
-            time=time
+            camera_matrix=self.camera.matrix
         )
-        # self.grass_obj.draw(
-        #     projection_matrix=self.camera.projection.matrix,
-        #     camera_matrix=camera_matrix,
-        #     time=time
-        # )
+        self.grass.draw(
+            projection_matrix=self.camera.projection.matrix,
+            camera_matrix=self.camera.matrix
+        )
 
 
 if __name__ == '__main__':
