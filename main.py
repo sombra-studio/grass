@@ -62,7 +62,7 @@ class Window(mglw.WindowConfig):
 
     def render(self, time, _):
         # This method is called every frame
-        self.ctx.clear()
+        self.ctx.clear(135.0 / 256.0, 206.0 / 256.0, 235.0 / 256.0)
         self.ctx.enable_only(moderngl.DEPTH_TEST | moderngl.BLEND)
         self.terrain.draw(
             projection_matrix=self.camera.projection.matrix,
