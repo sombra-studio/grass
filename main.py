@@ -50,8 +50,8 @@ class Window(mglw.WindowConfig):
                 self.wnd.cursor = not self.camera_enabled
             if key == keys.SPACE:
                 self.timer.toggle_pause()
-            if key == keys.S:
-                screenshot.create(self.wnd.fbo, name='screenshot.png')
+            if key == keys.R:
+                screenshot.create(self.wnd.fbo, name='docs/screenshot.png')
 
     def mouse_position_event(self, x: int, y: int, dx, dy):
         if self.camera_enabled:
