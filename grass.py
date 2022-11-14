@@ -12,11 +12,13 @@ DENSITY = 2
 class Grass:
     def __init__(self, window: moderngl_window.WindowConfig):
         self.diffuse = window.load_texture_2d('data/grass3.png')
+        self.diffuse.repeat_x = False
+        self.diffuse.repeat_y = False
         self.diffuse.build_mipmaps()
         sin_theta = sin(radians(45))
         cos_theta = cos(radians(45))
-        ctx = window.ctx
-        self.vbo = ctx.buffer(
+        self.ctx = window.ctx
+        self.vbo = self.ctx.buffer(
             array(
                 'f',
                 [
@@ -55,10 +57,10 @@ class Grass:
             -np.arange(ROWS * DENSITY) / DENSITY, COLS * DENSITY
         )
         offsets = np.dstack([offset_x, offset_y, offset_z])
-        self.vbo_offsets = ctx.buffer(offsets.astype('f4'))
+        self.vbo_offsets = self.ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
         self.program['scale'].value = 0.5
-        self.vao = ctx.vertex_array(
+        self.vao = self.ctx.vertex_array(
             self.program,
             [
                 (self.vbo, '3f 2f', 'in_position', 'in_uv'),
