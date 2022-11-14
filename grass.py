@@ -6,6 +6,7 @@ import numpy as np
 
 COLS = 300
 ROWS = 300
+DENSITY = 2
 
 
 class Grass:
@@ -46,9 +47,13 @@ class Grass:
             )
         )
         # Create offsets for instances
-        offset_x = np.tile(np.arange(COLS), ROWS) - 150
-        offset_y = np.zeros(ROWS * COLS)
-        offset_z = np.repeat(-np.arange(ROWS), COLS)
+        offset_x = np.tile(
+            np.arange(COLS * DENSITY) / DENSITY, ROWS * DENSITY
+        ) - COLS / 2
+        offset_y = np.zeros(ROWS * COLS * DENSITY ** 2)
+        offset_z = np.repeat(
+            -np.arange(ROWS * DENSITY) / DENSITY, COLS * DENSITY
+        )
         offsets = np.dstack([offset_x, offset_y, offset_z])
         self.vbo_offsets = ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
@@ -66,4 +71,4 @@ class Grass:
         self.program["m_proj"].write(projection_matrix)
         self.program["m_cam"].write(camera_matrix)
         self.diffuse.use(0)
-        self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS)
+        self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS*DENSITY**2)
