@@ -63,14 +63,15 @@ class Grass:
         self.vao = self.ctx.vertex_array(
             self.program,
             [
-                (self.vbo, '3f 2f', 'in_position', 'in_uv'),
+                (self.vbo, '3f 2f', 'in_position', 'in_texcoord'),
                 (self.vbo_offsets, '3f /i', 'in_offset')
             ]
         )
         self.window = window
 
-    def draw(self, projection_matrix=None, camera_matrix=None):
+    def draw(self, projection_matrix=None, camera_matrix=None, time=0.0):
         self.program["m_proj"].write(projection_matrix)
         self.program["m_cam"].write(camera_matrix)
+        self.program["wind_move"].value = 0.2 * sin(time)
         self.diffuse.use(0)
         self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS*DENSITY**2)

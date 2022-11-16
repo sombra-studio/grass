@@ -70,7 +70,8 @@ class Window(mglw.WindowConfig):
         )
         self.grass.draw(
             projection_matrix=self.camera.projection.matrix,
-            camera_matrix=self.camera.matrix
+            camera_matrix=self.camera.matrix,
+            time=time
         )
 
 
