@@ -7,6 +7,8 @@ import numpy as np
 COLS = 300
 ROWS = 300
 DENSITY = 2
+DIFFUSE_MAP_UNIT = 0
+NOISE_MAP_UNIT = 1
 
 
 class Grass:
@@ -15,6 +17,7 @@ class Grass:
         self.diffuse.repeat_x = False
         self.diffuse.repeat_y = False
         self.diffuse.build_mipmaps()
+        self.noise = window.load_texture_2d('data/noise.png')
         sin_theta = sin(radians(45))
         cos_theta = cos(radians(45))
         self.ctx = window.ctx
@@ -60,6 +63,9 @@ class Grass:
         self.vbo_offsets = self.ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
         self.program['scale'].value = 0.5
+        self.program['grid_size'].value = ROWS
+        self.program['image'].value = DIFFUSE_MAP_UNIT
+        self.program['noise'].value = NOISE_MAP_UNIT
         self.vao = self.ctx.vertex_array(
             self.program,
             [
@@ -72,6 +78,7 @@ class Grass:
     def draw(self, projection_matrix=None, camera_matrix=None, time=0.0):
         self.program["m_proj"].write(projection_matrix)
         self.program["m_cam"].write(camera_matrix)
-        self.program["wind_move"].value = 0.2 * sin(time)
-        self.diffuse.use(0)
+        self.program["time"].value = time
+        self.diffuse.use(location=DIFFUSE_MAP_UNIT)
+        self.noise.use(location=NOISE_MAP_UNIT)
         self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS*DENSITY**2)
