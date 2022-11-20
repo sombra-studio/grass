@@ -4,9 +4,9 @@ import moderngl
 import moderngl_window
 import numpy as np
 
-COLS = 300
-ROWS = 300
-DENSITY = 2
+COLS = 600
+ROWS = 600
+CELL_SIZE = 0.5
 DIFFUSE_MAP_UNIT = 0
 NOISE_MAP_UNIT = 1
 
@@ -52,13 +52,11 @@ class Grass:
             )
         )
         # Create offsets for instances
-        offset_x = np.tile(
-            np.arange(COLS * DENSITY) / DENSITY, ROWS * DENSITY
-        ) - COLS / 2
-        offset_y = np.zeros(ROWS * COLS * DENSITY ** 2)
-        offset_z = np.repeat(
-            -np.arange(ROWS * DENSITY) / DENSITY, COLS * DENSITY
+        offset_x = (
+            np.tile(np.arange(COLS) * CELL_SIZE, ROWS) - COLS * CELL_SIZE / 2
         )
+        offset_y = np.zeros(ROWS * COLS)
+        offset_z = np.repeat(-np.arange(ROWS) * CELL_SIZE, COLS)
         offsets = np.dstack([offset_x, offset_y, offset_z])
         self.vbo_offsets = self.ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
@@ -81,4 +79,4 @@ class Grass:
         self.program["time"].value = time
         self.diffuse.use(location=DIFFUSE_MAP_UNIT)
         self.noise.use(location=NOISE_MAP_UNIT)
-        self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS*DENSITY**2)
+        self.vao.render(moderngl.TRIANGLE_STRIP, instances=ROWS*COLS)
