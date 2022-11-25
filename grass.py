@@ -61,7 +61,7 @@ class Grass:
         self.vbo_offsets = self.ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
         self.program['scale'].value = 0.5
-        self.program['grid_size'].value = ROWS
+        self.program['grid_size'].value = ROWS * CELL_SIZE
         self.program['image'].value = DIFFUSE_MAP_UNIT
         self.program['noise'].value = NOISE_MAP_UNIT
         self.vao = self.ctx.vertex_array(
