@@ -52,11 +52,16 @@ class Grass:
             )
         )
         # Create offsets for instances
+        rng = np.random.default_rng()
         offset_x = (
             np.tile(np.arange(COLS) * CELL_SIZE, ROWS) - COLS * CELL_SIZE / 2
         )
+        variance_x = rng.random(ROWS * COLS) * 0.5
+        offset_x = offset_x + variance_x
         offset_y = np.zeros(ROWS * COLS)
         offset_z = np.repeat(-np.arange(ROWS) * CELL_SIZE, COLS)
+        variance_z = rng.random(ROWS * COLS) * 0.5
+        offset_z = offset_z + variance_z
         offsets = np.dstack([offset_x, offset_y, offset_z])
         self.vbo_offsets = self.ctx.buffer(offsets.astype('f4'))
         self.program = window.load_program('shaders/grass.glsl')
