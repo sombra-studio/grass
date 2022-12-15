@@ -38,7 +38,10 @@ in vec2 texcoord;
 out vec4 f_color;
 
 void main() {
-    f_color = texture(image, texcoord);
+    vec4 color = texture(image, texcoord);
+    if (color.a < 0.1)
+        discard;
+    f_color = color;
 }
 
 #endif

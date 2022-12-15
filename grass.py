@@ -13,7 +13,7 @@ NOISE_MAP_UNIT = 1
 
 class Grass:
     def __init__(self, window: moderngl_window.WindowConfig):
-        self.diffuse = window.load_texture_2d('data/grass3.png')
+        self.diffuse = window.load_texture_2d('data/grass.png')
         self.diffuse.repeat_x = False
         self.diffuse.repeat_y = False
         self.diffuse.build_mipmaps()
