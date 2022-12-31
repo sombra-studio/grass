@@ -8,7 +8,7 @@ NORMAL_MAP_UNIT = 1
 
 
 class Terrain:
-    def __init__(self, window, size=300, max_height=20):
+    def __init__(self, window, size=300, max_height=15):
         """
         Object for a 3D terrain.
         Args:
@@ -20,12 +20,19 @@ class Terrain:
         self.diffuse_map.build_mipmaps()
         self.normal_map = window.load_texture_2d('data/base_grass5n.png')
         self.normal_map.build_mipmaps()
-        # height_map_img = Image.open('data/map_00-05-37.png')
-        # self.height_map = (
-        #     np.asarray(height_map_img.convert('F'), dtype=np.single) / 255
-        #  ) * self.max_height
-        self.height_map = np.zeros([256, 256])
+        # Create height map
+        height_map_img = Image.open('data/map_00-05-37.png').convert('F')
+        self.height_map = np.asarray(height_map_img)
+        self.height_map = (
+            (self.height_map / self.height_map.max()) * self.max_height
+        )
+        # self.height_map = np.array([
+        #     [1, 0.8, 0.6],
+        #     [0.9, 0.5, 0.7],
+        #     [0.3, 0.7, 0.6]
+        # ])
         self.h, self.w = self.height_map.shape
+        # Initialize vertices and indices
         self.vertices = self.init_vertices()
         self.indices = self.init_indices()
         ctx = window.ctx
@@ -51,7 +58,7 @@ class Terrain:
             for i in range(self.w):
                 x = -self.size / 2 + (i / self.w) * self.size
                 y = self.height_map[j, i]
-                z = -(j / self.h)* self.size
+                z = -(j / self.h) * self.size
                 u = i / (self.w - 1)
                 v = self.h - 1 - j / (self.h - 1)
                 vertex = [x, y, z, u, v]
@@ -60,21 +67,25 @@ class Terrain:
 
     def init_indices(self):
         indices = []
-        for j in range(self.h):
+        for j in range(self.h - 2):
             for i in range(self.w):
-                bottom_idx = (j + 1) * self.w + 1 + i
-                top_idx = j * self.w + i
+                bottom_idx = j * self.w + i
+                top_idx = (j + 1) * self.w + i
                 # Maybe this could be reversed
                 indices.append(bottom_idx)
                 indices.append(top_idx)
             # Add last idx and next one to make an empty triangle
-            last_idx = (j + 1) * self.w - 1
-            if j == self.h - 1:
-                next_idx = last_idx
-            else:
-                next_idx = last_idx + 1 + self.w
+            last_idx = (j + 2) * self.w - 1
+            next_idx = last_idx + 1
             indices.append(last_idx)
             indices.append(next_idx)
+            indices.append(next_idx)
+        # Do last row
+        for i in range(self.w):
+            bottom_idx = (self.h - 2) * self.w + i
+            top_idx = (self.h - 1) * self.w + i
+            indices.append(bottom_idx)
+            indices.append(top_idx)
         return indices
 
     def draw(self, projection_matrix=None, camera_matrix=None):
